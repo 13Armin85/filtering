@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <title>Filter Example</title>
+</head>
+<body>
+    
+    <div class="top-bar">
+        <button class="btn-primary">جدید</button>
+
+        <div class="controls-container">
+            <div class="icon-group">
+                <i id="filter-icon" class="fa-solid fa-filter icon"></i>
+                <i id="menu-icon" class="fa-solid fa-bars icon"></i>
+            </div>
+
+            <div id="dropdown" class="dropdown-menu">
+                <ul>
+                    <li class="dropdown-header">
+                        <span>فیلتر ها</span>
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </li>
+                    <li>رفرش جدول</li>
+                    <li>شخصی سازی جدول</li>
+                    <li>راه انداز رنگ</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="filter-section" class="filter-container">
+        <div class="filter-row">
+            <button class="btn-filter">اجرا</button>
+            <button class="btn-filter">ذخیره‌سازی</button>
+            <button class="btn-filter">شرط "و"</button>
+            <button class="btn-filter">شرط "یا"</button>
+            <button class="btn-icon"><i class="fa-regular fa-star"></i></button>
+        </div>
+        <div class="filter-row">
+            <input type="text" class="filter-input" placeholder="ارزش">
+            <input type="text" class="filter-input" placeholder="عملیات">
+            <div class="custom-select-wrapper">
+    <div class="custom-select-display">
+        <span>انتخاب دسته بندی</span>
+        <i class="fa-solid fa-chevron-down"></i>
+    </div>
+    <ul class="custom-options-list">
+        <li data-value="cat1">دسته ۱</li>
+        <li data-value="cat2">دسته ۲</li>
+        <li data-value="cat3">دسته ۳</li>
+    </ul>
+</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+/* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'vazir-font', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+body {
+    background-color: #f0f2f5;
+    direction: ltr;
+    overflow: hidden;
+}
+
+/* Top Bar & Controls */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #eee;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.btn-primary {
+    background-color: #6a5acd; /* A shade of purple from image */
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.controls-container {
+    position: relative;
+}
+
+.icon-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+.icon.active:hover{
+    border: 1px solid #4F52BD;
+
+}
+
+.icon {
+    font-size: 18px;
+    cursor: pointer;
+    color: #555;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.icon.active {
+    color: #6a5acd;
+    background-color: #f0edff;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    left: -130px;
+    top: calc(100% + 5px);
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    list-style: none;
+    width: 200px;
+    z-index: 1000;
+    padding: 5px 0;
+    direction: rtl;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-menu li {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.dropdown-menu li:hover {
+    background-color: #f5f5f5;
+}
+#dropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.dropdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 5px;
+}
+
+/* --- NEW CSS FOR FILTER SECTION --- */
+.filter-container {
+    display: none; /* Hidden by default */
+    background-color: #eee;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    gap: 12px;
+    flex-direction: column;
+}
+
+.filter-container.show {
+    display: flex; /* Use flex to show it */
+}
+
+.filter-row {
+    display: flex;
+    justify-content: flex-end; /* Align to right for RTL */
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-filter, .btn-icon {
+    background-color: #ffffff;
+    border: 1px solid #4F52BD;
+        color:#4F52BD ;
+    padding: 6px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.btn-icon {
+    padding: 6px 10px;
+    line-height: 1;
+}
+
+.btn-filter:hover, .btn-icon:hover {
+    background-color: #f7f7f7;
+    border-color: #a0a0a0;
+}
+
+.filter-select, .filter-input {
+    padding: 7px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #ffffff00;
+
+    font-size: 14px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.06);
+}
+.filter-input{
+    border: 1px solid #4e4e4e !important;
+}
+.filter-select {
+    min-width: 160px;
+}
+.filter-input {
+    min-width: 200px;
+}
+
+/* --- استایل‌های جدید برای منوی کشویی سفارشی --- */
+
+.custom-select-wrapper {
+    position: relative; /* برای جای‌گیری صحیح لیست گزینه‌ها */
+    min-width: 200px;
+}
+
+.custom-select-display {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 7px 10px;
+    display: flex;
+    justify-content: space-between; /* متن و فلش در دو طرف قرار می‌گیرند */
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    color: #555; /* رنگ متن پیش‌فرض */
+}
+
+.select-arrow {
+    color: #888;
+    font-size: 12px;
+    transition: transform 0.2s ease;
+}
+
+/* چرخاندن فلش هنگام باز بودن منو */
+.custom-options-list.show + .custom-select-display .select-arrow {
+    transform: rotate(180deg);
+}
+
+.custom-options-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    
+    display: none; 
+    position: absolute;
+    top: 100%; 
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-top: none; 
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 100;
+    max-height: 200px;
+    overflow-y: auto; 
+}
+
+.custom-options-list.show {
+    display: block; 
+    }
+
+.custom-options-list li {
+    padding: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.custom-options-list li:hover {
+    background-color: #f0f0f0; 
+}
