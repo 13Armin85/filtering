@@ -1,22 +1,34 @@
 document.addEventListener('DOMContentLoaded', function() {
-
     const filterIcon = document.getElementById('filter-icon');
     const menuIcon = document.getElementById('menu-icon');
     const dropdownMenu = document.getElementById('dropdown');
     const filterSection = document.getElementById('filter-section');
     const controlsContainer = document.querySelector('.controls-container');
-    const initialDropdownWrapper = document.querySelector('.custom-select-wrapper');
+    const filterRowsContainer = document.getElementById('filter-rows-container');
+    const breadcrumbsList = document.getElementById('breadcrumbs-list');
 
-    function createDropdownHTML(initialText = "انتخاب دسته بندی") {
+    // Seleção dos botões de ação
+    const runFilterBtn = document.getElementById('run-filter-btn');
+    const saveFilterBtn = document.getElementById('save-filter-btn');
+    const pinFilterBtn = document.getElementById('pin-filter-btn');
+    const addAndBtn = document.getElementById('add-and-btn');
+    const addOrBtn = document.getElementById('add-or-btn');
+
+    let breadcrumbState = []; 
+
+    function createDropdownHTML() {
         return `
             <div class="custom-select-wrapper">
                 <div class="custom-select-display">
-                    <span>${initialText}</span>
+                    <span>انتخاب دسته بندی</span>
                     <i class="fa-solid fa-chevron-down"></i>
                 </div>
                 <ul class="custom-options-list">
                     <li class="search-box-li">
-                        <input type="text" class="dropdown-search-input" autocomplete="off" placeholder="جستجو...">
+                        <div class="search-input-container">
+                            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                            <input type="text" class="dropdown-search-input" autocomplete="off" placeholder="جستجو...">
+                        </div>
                     </li>
                     <li data-value="cat1">قابلیت های مدیریت سرویس</li>
                     <li data-value="cat2">امکانات عمومی</li>
@@ -24,6 +36,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 </ul>
             </div>
         `;
+    }
+
+    function createNewFilterRow(conditionType = null) {
+        const row = document.createElement('div');
+        row.className = 'filter-row';
+
+        let conditionTextHTML = '';
+        if (conditionType) {
+            conditionTextHTML = `<span class="or-text-inline">${conditionType}</span>`;
+        }
+
+        row.innerHTML = `
+            <button type="button" class="btn-icon-delete" title="حذف شرط"><i class="fa-solid fa-xmark"></i></button>
+            <input type="text" class="filter-input" placeholder="ارزش">
+            <input type="text" class="filter-input" placeholder="عملیات">
+            ${createDropdownHTML()}
+            ${conditionTextHTML}
+        `;
+        return row;
     }
 
     function initializeDropdown(wrapperElement) {
@@ -34,7 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!display || !optionsList) return;
 
-        display.addEventListener('click', () => {
+        display.addEventListener('click', (e) => {
+            e.stopPropagation();
             document.querySelectorAll('.custom-options-list.show').forEach(list => {
                 if (list !== optionsList) list.classList.remove('show');
             });
@@ -45,7 +77,8 @@ document.addEventListener('DOMContentLoaded', function() {
             searchInput.addEventListener('input', (e) => {
                 const searchTerm = e.target.value.toLowerCase();
                 options.forEach(option => {
-                    option.style.display = option.textContent.toLowerCase().includes(searchTerm) ? '' : 'none';
+                    const isVisible = option.textContent.toLowerCase().includes(searchTerm);
+                    option.style.display = isVisible ? '' : 'none';
                 });
             });
             searchInput.addEventListener('click', e => e.stopPropagation());
@@ -59,117 +92,132 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    function getFiltersData() {
+        const allFilterRows = filterRowsContainer.querySelectorAll('.filter-row');
+        const filtersData = [];
 
-    function closeAllPanels() { if (dropdownMenu) dropdownMenu.classList.remove('show'); if (filterSection) filterSection.classList.remove('show'); document.querySelectorAll('.icon-group .icon').forEach(i => i.classList.remove('active')); }
-    if(filterIcon) filterIcon.addEventListener('click', function(event) { event.stopPropagation(); const isActive = this.classList.contains('active'); closeAllPanels(); if (!isActive) { if (filterSection) filterSection.classList.add('show'); this.classList.add('active'); } });
-    if(menuIcon) menuIcon.addEventListener('click', function(event) { event.stopPropagation(); const isActive = this.classList.contains('active'); closeAllPanels(); if (!isActive) { if (dropdownMenu) dropdownMenu.classList.add('show'); this.classList.add('active'); } });
+        allFilterRows.forEach(row => {
+            const condition = row.querySelector('.or-text-inline')?.textContent || 'و';
+            const category = row.querySelector('.custom-select-display span').textContent;
+            const operationInput = row.querySelector('input[placeholder="عملیات"]');
+            const valueInput = row.querySelector('input[placeholder="ارزش"]');
 
-    let isStructureCreated = false;
-
-    if (initialDropdownWrapper) {
-        initializeDropdown(initialDropdownWrapper);
-        const initialOptions = initialDropdownWrapper.querySelectorAll('.custom-options-list li:not(.search-box-li)');
-        
-        const handleOptionClick = function(event) {
-            event.stopPropagation();
-
-            const selectedCategoryText = this.textContent.trim();
-
-            if (!isStructureCreated) {
-                filterSection.innerHTML = '';
-
-                const fullStructureHTML = `
-                    <div class="filter-row">
-                        <button type="button" class="btn-filter">اجرا</button>
-                        <button type="button" class="btn-filter">ذخیره‌سازی</button>
-                        <button type="button" class="btn-filter">شرط "و"</button>
-                        <button type="button" class="btn-filter">شرط "یا"</button>
-                        <button type="button" class="btn-icon"><i class="fa-regular fa-star"></i></button>
-                    </div>
-                    <div class="filter-group" id="and-conditions-group">
-                        <div class="filter-group-header">تمام شروط باید در نظر گرفته شود</div>
-                        <div class="filter-rows-container">
-                            <div class="filter-row">
-                                <button type="button" class="btn-icon-delete" title="حذف شرط"><i class="fa-solid fa-xmark"></i></button>
-                                <button type="button" class="btn-filter">شرط "یا"</button>
-                                <button type="button" class="btn-filter">شرط "و"</button>
-                                <input type="text" class="filter-input" placeholder="ارزش">
-                                <input type="text" class="filter-input" placeholder="عملیات">
-                                ${createDropdownHTML(selectedCategoryText)}
-                            </div>
-                            <div class="filter-row">
-                                <button type="button" class="btn-icon-delete" title="حذف شرط"><i class="fa-solid fa-xmark"></i></button>
-                                <button type="button" class="btn-filter">شرط "یا"</button>
-                                <button type="button" class="btn-filter">شرط "و"</button>
-                                <button type="button" class="btn-icon" title="تاریخ"><i class="fa-regular fa-calendar"></i></button>
-                                <input type="text" class="filter-input" placeholder="ارزش">
-                                <input type="text" class="filter-input" placeholder="عملیات">
-                                ${createDropdownHTML('قابلیت‌های مدیریت سرویس')}
-                            </div>
-                            <div class="filter-row" id="or-placeholder-row">                              
-                                <input type="text" class="filter-input" placeholder="ارزش">
-                                <input type="text" class="filter-input" placeholder="عملیات">                                
-                                ${createDropdownHTML('قابلیت‌های مدیریت سرویس')}
-                                <span class="or-text">یا</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="filter-group" id="or-conditions-group">
-                        <div class="filter-group-header">یا تمام این شروط باید در نظر گرفته شود</div>
-                        <div class="filter-rows-container">
-                            <div class="filter-row">
-                                <input type="text" class="filter-input" placeholder="ارزش">
-                                <input type="text" class="filter-input" placeholder="عملیات">
-                                ${createDropdownHTML('قابلیت‌های مدیریت سرویس')}
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                filterSection.innerHTML = fullStructureHTML;
-                filterSection.querySelectorAll('.custom-select-wrapper').forEach(initializeDropdown);
-                isStructureCreated = true;
-            } else {
-                const newRow = document.createElement('div');
-                newRow.className = 'filter-row';
-                newRow.innerHTML = `
-                    <button type="button" class="btn-icon-delete" title="حذف شرط"><i class="fa-solid fa-xmark"></i></button>
-                    <button type="button" class="btn-filter">شرط "یا"</button>
-                    <button type="button" class="btn-filter">شرط "و"</button>
-                    <input type="text" class="filter-input" placeholder="ارزش">
-                    <input type="text" class="filter-input" placeholder="عملیات">
-                    ${createDropdownHTML(selectedCategoryText)}
-                `;
-                
-                const rowsContainer = document.querySelector('#and-conditions-group .filter-rows-container');
-                const orPlaceholderRow = document.getElementById('or-placeholder-row');
-                if (rowsContainer && orPlaceholderRow) {
-                    rowsContainer.insertBefore(newRow, orPlaceholderRow);
-                    initializeDropdown(newRow.querySelector('.custom-select-wrapper'));
-                }
-            }
-        };
-
-        initialOptions.forEach(option => {
-            option.addEventListener('click', handleOptionClick);
+            filtersData.push({
+                condition: condition,
+                category: category.trim(),
+                operation: operationInput ? operationInput.value : '',
+                value: valueInput ? valueInput.value : ''
+            });
         });
+
+        return filtersData;
+    }
+    function closeAllPanels() {
+        if (dropdownMenu) dropdownMenu.classList.remove('show');
+        if (filterSection) filterSection.classList.remove('show');
+        document.querySelectorAll('.icon-group .icon').forEach(i => i.classList.remove('active'));
     }
 
-    filterSection.addEventListener('click', function(e) {
+    function renderBreadcrumbs() {
+        breadcrumbsList.innerHTML = '';
+        breadcrumbState.forEach((item, index) => {
+            const listItem = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = '#';
+            link.textContent = item.text;
+            link.dataset.index = index;
+
+            listItem.appendChild(link);
+            breadcrumbsList.appendChild(listItem);
+        });
+        saveBreadcrumbsToStorage();
+    }
+    function saveBreadcrumbsToStorage() {
+        localStorage.setItem('breadcrumbs', JSON.stringify(breadcrumbState));
+    }
+    function loadBreadcrumbsFromStorage() {
+        const savedState = localStorage.getItem('breadcrumbs');
+        breadcrumbState = savedState ? JSON.parse(savedState) : [{ text: 'همه', value: 'all' }];
+    }
+    pinFilterBtn.addEventListener('click', function() {
+        filterSection.classList.toggle('filter-container-pinned');
+        this.classList.toggle('active');
+    });
+
+    saveFilterBtn.addEventListener('click', function() {
+        const data = getFiltersData();
+        console.log("--- 💾 Informações do filtro salvas ---");
+        console.table(data);
+        alert("Informações salvas no console do navegador.");
+    });
+
+    runFilterBtn.addEventListener('click', function() {
+        const data = getFiltersData();
+        console.log("--- 🚀 Executando com os seguintes filtros ---");
+        console.table(data);
+        const newBreadcrumbs = data.map(filter => ({
+            text: `${filter.category} ${filter.operation || ''} ${filter.value || ''}`.trim(),
+            value: filter
+        }));
+        breadcrumbState = [{ text: 'همه', value: 'all' }, ...newBreadcrumbs];
+        renderBreadcrumbs();
+    });
+
+    addAndBtn.addEventListener('click', () => {
+        const newRow = createNewFilterRow('و');
+        filterRowsContainer.appendChild(newRow);
+        initializeDropdown(newRow.querySelector('.custom-select-wrapper'));
+    });
+
+    addOrBtn.addEventListener('click', () => {
+        const newRow = createNewFilterRow('یا');
+        filterRowsContainer.appendChild(newRow);
+        initializeDropdown(newRow.querySelector('.custom-select-wrapper'));
+    });
+    filterRowsContainer.addEventListener('click', function(e) {
         const deleteButton = e.target.closest('.btn-icon-delete');
-        
         if (deleteButton) {
-            e.stopPropagation(); 
+            e.stopPropagation();
             deleteButton.closest('.filter-row').remove();
         }
     });
+    breadcrumbsList.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (e.target.tagName === 'A') {
+            const index = parseInt(e.target.dataset.index, 10);
+            breadcrumbState = breadcrumbState.slice(0, index + 1);
+            renderBreadcrumbs();
+        }
+    });
+    filterIcon.addEventListener('click', function(event) {
+        event.stopPropagation();
+        const isActive = this.classList.contains('active');
+        closeAllPanels();
+        if (!isActive) {
+            filterSection.classList.add('show');
+            this.classList.add('active');
+        }
+    });
+
+    menuIcon.addEventListener('click', function(event) {
+        event.stopPropagation();
+        const isActive = this.classList.contains('active');
+        closeAllPanels();
+        if (!isActive) {
+            dropdownMenu.classList.add('show');
+            this.classList.add('active');
+        }
+    });
     window.addEventListener('click', function(event) {
-        if (controlsContainer && !controlsContainer.contains(event.target) && filterSection && !filterSection.contains(event.target)) {
+        if (controlsContainer && !controlsContainer.contains(event.target) && !filterSection.contains(event.target)) {
             closeAllPanels();
         }
-        
         if (!event.target.closest('.custom-select-wrapper')) {
             document.querySelectorAll('.custom-options-list.show').forEach(list => list.classList.remove('show'));
         }
     });
+    loadBreadcrumbsFromStorage();
+    renderBreadcrumbs();
+    document.querySelectorAll('.custom-select-wrapper').forEach(initializeDropdown);
+
 });

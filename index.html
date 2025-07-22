@@ -8,7 +8,7 @@
     <title>Filter Example</title>
 </head>
 <body>
-    
+
     <div class="top-bar">
         <button class="btn-primary">جدید</button>
 
@@ -20,9 +20,17 @@
 
             <div id="dropdown" class="dropdown-menu">
                 <ul>
-                    <li class="dropdown-header">
+                    <li class="dropdown-header" id="filters-menu-item">
                         <span>فیلتر ها</span>
                         <i class="fa-solid fa-chevron-left"></i>
+                        
+                        <div class="submenu">
+                            <ul>
+                                <li><a href="/saved-filter-1">فیلتر ذخیره شده ۱</a></li>
+                                <li><a href="/saved-filter-2">فیلتر ذخیره شده ۲</a></li>
+                                <li><a href="/manage-filters">مدیریت فیلترها</a></li>
+                            </ul>
+                        </div>
                     </li>
                     <li>رفرش جدول</li>
                     <li>شخصی سازی جدول</li>
@@ -32,34 +40,43 @@
         </div>
     </div>
 
+    <div class="breadcrumb-container">
+        <ol id="breadcrumbs-list" class="breadcrumbs"></ol>
+    </div>
+
     <div id="filter-section" class="filter-container">
         <div class="filter-row">
-            <button class="btn-filter">اجرا</button>
-            <button class="btn-filter">ذخیره‌سازی</button>
-            <button class="btn-filter">شرط "و"</button>
-            <button class="btn-filter">شرط "یا"</button>
+            <button id="run-filter-btn" class="btn-filter">اجرا</button>
+            <button id="save-filter-btn" class="btn-filter">ذخیره‌سازی</button>
+            <button id="add-and-btn" class="btn-filter">شرط "و"</button>
+            <button id="add-or-btn" class="btn-filter">شرط "یا"</button>
             <button class="btn-icon"><i class="fa-regular fa-star"></i></button>
+            <button id="pin-filter-btn" class="btn-icon" title="پین کردن فیلتر"><i class="fa-solid fa-thumbtack"></i></button>
         </div>
-        <div class="filter-row">
-            <input type="text" class="filter-input" placeholder="ارزش">
-            <input type="text" class="filter-input" placeholder="عملیات">
-            <div class="custom-select-wrapper">
-    <div class="custom-select-display">
-        <span>انتخاب دسته بندی</span>
-        <i class="fa-solid fa-chevron-down"></i>
-    </div>
-    <ul class="custom-options-list">
-            <li class="search-box-li">
-        <input type="text" class="dropdown-search-input"  autocomplete="off">
-    </li>
-        <li data-value="cat1">قابلیت های مدیریت سرویس </li>
-        <li data-value="cat2">امکانات عمومی </li>
-        <li data-value="cat3">پیکربندی و اختصاصی سازی  </li>
-        <li data-value="cat4">قابلیت مدیریت های سرویس </li>
-        <li data-value="cat5">امکانات عمومی </li>
-        <li data-value="cat6">پیکربندی و اختصاصی سازی  </li>
-    </ul>
-</div>
+        <div id="filter-rows-container">
+            <div class="filter-row">
+                <button type="button" class="btn-icon-delete" title="حذف شرط"><i class="fa-solid fa-xmark"></i></button>
+                <input type="text" class="filter-input" placeholder="ارزش">
+                <input type="text" class="filter-input" placeholder="عملیات">
+                <div class="custom-select-wrapper">
+                    <div class="custom-select-display">
+                        <span>انتخاب دسته بندی</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <ul class="custom-options-list">
+                        <li class="search-box-li">
+                            <div class="search-input-container">
+                                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                <input type="text" class="dropdown-search-input" autocomplete="off" placeholder="جستجو...">
+                            </div>
+                        </li>
+                        <li data-value="cat1">قابلیت های مدیریت سرویس</li>
+                        <li data-value="cat2">امکانات عمومی</li>
+                        <li data-value="cat3">پیکربندی و اختصاصی سازی</li>
+                    </ul>
+                </div>
+                <span class="or-text-inline">و</span>
+            </div>
         </div>
     </div>
 
